@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fishing Words – Task 1: Flashcards | Vg1 Naturbruk</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --deep: #042C53;
+    --mid: #185FA5;
+    --light: #378ADD;
+    --teal: #1D9E75;
+    --sand: #FAF7F2;
+    --white: #ffffff;
+    --ink: #1a1a2e;
+    --soft: #5a6a80;
+    --radius: 18px;
+    --correct: #1D9E75;
+    --wrong: #D64444;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--deep);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* animated ocean background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 80% 20%, #185FA5 0%, transparent 55%),
+      radial-gradient(ellipse 50% 60% at 10% 80%, #0F6E56 0%, transparent 50%),
+      var(--deep);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* NAV */
+  .nav { display: flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; }
+  .nav a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 13px; transition: color 0.15s; }
+  .nav a:hover { color: white; }
+  .nav-sep { color: rgba(255,255,255,0.25); font-size: 13px; }
+
+  /* HEADER */
+  .page-header { margin-bottom: 2.5rem; }
+  .page-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #9FE1CB; margin-bottom: 10px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: clamp(1.6rem, 4vw, 2.3rem); font-weight: 700; color: white; line-height: 1.2; margin-bottom: 8px; }
+  .page-desc { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+  /* PROGRESS BAR */
+  .prog-wrap { margin-bottom: 2rem; }
+  .prog-info { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+  .prog-bar-bg { height: 5px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+  .prog-bar { height: 5px; background: linear-gradient(90deg, var(--teal), var(--light)); border-radius: 10px; transition: width 0.4s ease; }
+
+  /* FLASHCARD */
+  .card-scene { width: 100%; perspective: 1000px; margin-bottom: 1.5rem; cursor: pointer; }
+  .card-scene:focus { outline: none; }
+  .card-inner {
+    width: 100%; min-height: 220px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--radius);
+  }
+  .card-scene.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute; inset: 0;
+    border-radius: var(--radius);
+    backface-visibility: hidden;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    min-height: 220px;
+  }
+  .card-front {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    backdrop-filter: blur(12px);
+  }
+  .card-back {
+    background: rgba(29,158,117,0.18);
+    border: 1px solid rgba(29,158,117,0.35);
+    backdrop-filter: blur(12px);
+    transform: rotateY(180deg);
+  }
+  .card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
+  .card-word { font-family: 'Fraunces', serif; font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 700; color: white; margin-bottom: 8px; }
+  .card-hint { font-size: 13px; color: rgba(255,255,255,0.45); }
+  .card-back .card-word { color: #9FE1CB; }
+  .card-back .card-translation { font-size: 18px; color: rgba(255,255,255,0.6); margin-top: 6px; font-weight: 300; }
+  .flip-hint { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 10px; }
+
+  /* CONTROLS */
+  .controls { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 2.5rem; }
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    border: none; cursor: pointer;
+    border-radius: 40px;
+    padding: 10px 22px;
+    transition: all 0.15s;
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.14); color: white; }
+  .btn-primary { background: var(--teal); color: white; }
+  .btn-primary:hover { background: #25b886; transform: translateY(-1px); }
+  .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+  .btn-secondary:hover { background: rgba(255,255,255,0.16); }
+  .card-counter { font-size: 13px; color: rgba(255,255,255,0.4); min-width: 60px; text-align: center; }
+
+  /* CATEGORY FILTER */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .filter-btn {
+    font-size: 12px; font-weight: 400;
+    padding: 5px 14px; border-radius: 30px; cursor: pointer; border: none;
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: all 0.15s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: rgba(255,255,255,0.15); color: white;
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  /* WORD LIST */
+  .word-list-title { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 1rem; margin-top: 2rem; }
+  .word-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+  .word-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    display: flex; flex-direction: column; gap: 3px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .word-chip:hover { background: rgba(255,255,255,0.1); }
+  .word-chip.seen { border-color: rgba(29,158,117,0.3); background: rgba(29,158,117,0.07); }
+  .word-en { font-weight: 500; color: white; }
+  .word-no { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 300; }
+
+  /* DONE SCREEN */
+  .done-screen { display: none; text-align: center; padding: 3rem 1rem; }
+  .done-screen.visible { display: block; }
+  .done-emoji { font-size: 56px; margin-bottom: 1rem; }
+  .done-title { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+  .done-sub { color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 300; margin-bottom: 2rem; }
+
+  /* BACK LINK */
+  .back-link { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.4); text-decoration: none; font-size: 13px; margin-top: 2rem; transition: color 0.15s; }
+  .back-link:hover { color: white; }
+
+  @media (max-width: 480px) {
+    .word-grid { grid-template-columns: repeat(2, 1fr); }
+    .controls { gap: 8px; }
+    .btn { padding: 9px 16px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <span class="nav-sep">›</span>
+    <a href="fishing.html">Fishing</a>
+    <span class="nav-sep">›</span>
+    <span style="color:rgba(255,255,255,0.7)">Task 1</span>
+  </nav>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <p class="page-eyebrow">Vocational words · Fishing · Task 1</p>
+    <h1 class="page-title">Flashcards 🃏</h1>
+    <p class="page-desc">Click each card to reveal the Norwegian translation. Use the filters to practise by category.</p>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters" id="filters">
+    <button class="filter-btn active" onclick="setCategory('all', this)">All words</button>
+    <button class="filter-btn" onclick="setCategory('methods', this)">🎣 Fishing methods</button>
+    <button class="filter-btn" onclick="setCategory('fish', this)">🐟 Fish & seafood</button>
+    <button class="filter-btn" onclick="setCategory('vessel', this)">⛵ On the vessel</button>
+    <button class="filter-btn" onclick="setCategory('gear', this)">🔧 Gear & equipment</button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog-wrap">
+    <div class="prog-info">
+      <span id="progText">Card 1 of 43</span>
+      <span id="seenText">0 seen</span>
+    </div>
+    <div class="prog-bar-bg"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+  </div>
+
+  <!-- FLASHCARD -->
+  <div class="card-scene" id="flashcard" tabindex="0" onclick="flipCard()" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard()">
+    <div class="card-inner" id="cardInner">
+      <div class="card-face card-front">
+        <div class="card-label">English</div>
+        <div class="card-word" id="cardEN">Trawling</div>
+        <div class="card-hint" id="cardCat">Fishing method</div>
+        <div class="flip-hint">Click to flip ↩</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="card-label">Norwegian</div>
+        <div class="card-word" id="cardNO">Trålfiske</div>
+        <div class="card-translation" id="cardBack2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn btn-ghost" onclick="prevCard()">← Prev</button>
+    <span class="card-counter" id="cardCounter">1 / 43</span>
+    <button class="btn btn-primary" onclick="nextCard()">Next →</button>
+  </div>
+  <div style="text-align:center; margin-bottom:2rem;">
+    <button class="btn btn-secondary" onclick="shuffleCards()">🔀 Shuffle</button>
+    &nbsp;
+    <button class="btn btn-secondary" onclick="restartCards()">↺ Restart</button>
+  </div>
+
+  <!-- DONE SCREEN -->
+  <div class="done-screen" id="doneScreen">
+    <div class="done-emoji">🎉</div>
+    <div class="done-title">All cards seen!</div>
+    <div class="done-sub">You've gone through all the words in this set.<br>Try shuffling and going again, or move on to Task 2.</div>
+    <button class="btn btn-primary" onclick="restartCards()" style="margin-right:10px;">↺ Go again</button>
+    <a href="fishing-task2.html" class="btn btn-secondary" style="text-decoration:none; display:inline-block;">Task 2 →</a>
+  </div>
+
+  <!-- WORD LIST -->
+  <p class="word-list-title">All words in this set</p>
+  <div class="word-grid" id="wordGrid"></div>
+
+  <a href="fishing.html" class="back-link">← Back to Fishing</a>
+</div>
+
+<script>
+const allWords = [
+  { en: "Trawling",       no: "Trålfiske",       cat: "methods" },
+  { en: "Trawler",        no: "Tråler",           cat: "vessel"  },
+  { en: "Purse seine",    no: "Ringnot / snurpenot", cat: "methods" },
+  { en: "Danish seine",   no: "Snurrevad",        cat: "methods" },
+  { en: "Potting",        no: "Bruke teiner",     cat: "methods" },
+  { en: "Pot",            no: "Teine",            cat: "gear"    },
+  { en: "Longlining",     no: "Linefiske",        cat: "methods" },
+  { en: "Jigging",        no: "Juksefiske",       cat: "methods" },
+  { en: "Mackerel",       no: "Makrell",          cat: "fish"    },
+  { en: "Oyster",         no: "Østers",           cat: "fish"    },
+  { en: "Lumpfish",       no: "Rognkjeks",        cat: "fish"    },
+  { en: "Wrasse",         no: "Leppefisk",        cat: "fish"    },
+  { en: "Gill net",       no: "Bunngarn",         cat: "gear"    },
+  { en: "Drift net",      no: "Drivgarn",         cat: "gear"    },
+  { en: "Bait",           no: "Agn",              cat: "gear"    },
+  { en: "Lobster",        no: "Hummer",           cat: "fish"    },
+  { en: "Shrimp",         no: "Reke",             cat: "fish"    },
+  { en: "Port",           no: "Babord",           cat: "vessel"  },
+  { en: "Starboard",      no: "Styrbord",         cat: "vessel"  },
+  { en: "Stern",          no: "Akter",            cat: "vessel"  },
+  { en: "Bow",            no: "Baug",             cat: "vessel"  },
+  { en: "Crustacean",     no: "Skalldyr",         cat: "fish"    },
+  { en: "Cod",            no: "Torsk",            cat: "fish"    },
+  { en: "Herring",        no: "Sild",             cat: "fish"    },
+  { en: "Coalfish",       no: "Sei",              cat: "fish"    },
+  { en: "Haddock",        no: "Hyse",             cat: "fish"    },
+  { en: "Fishing vessel", no: "Fiskebåt",         cat: "vessel"  },
+  { en: "Oil skins",      no: "Oljehyre",         cat: "gear"    },
+  { en: "Life jacket",    no: "Redningsvest",     cat: "gear"    },
+  { en: "Gaff",           no: "Klepp",            cat: "gear"    },
+  { en: "Rope",           no: "Tau",              cat: "gear"    },
+  { en: "Hand net",       no: "Håv",              cat: "gear"    },
+  { en: "Safety boots",   no: "Vernesko / støvler", cat: "gear"  },
+  { en: "Knife",          no: "Kniv",             cat: "gear"    },
+  { en: "Gut",            no: "Sløye",            cat: "gear"    },
+  { en: "School of fish", no: "Fiskestim",        cat: "fish"    },
+  { en: "Power block",    no: "Kraftblokk",       cat: "vessel"  },
+  { en: "Winch",          no: "Vinsj",            cat: "vessel"  },
+  { en: "Buoy",           no: "Blåse",            cat: "gear"    },
+  { en: "Quota",          no: "Kvote",            cat: "methods" },
+  { en: "Hydraulics",     no: "Hydrolikk",        cat: "vessel"  },
+  { en: "Radar",          no: "Radar",            cat: "vessel"  },
+  { en: "Echo sounder",   no: "Ekkolodd",         cat: "vessel"  },
+];
+
+const catLabels = { methods:"Fishing method", fish:"Fish & seafood", vessel:"On the vessel", gear:"Gear & equipment" };
+
+let currentCategory = 'all';
+let deck = [];
+let idx = 0;
+let seen = new Set();
+
+function getFiltered() {
+  return currentCategory === 'all' ? [...allWords] : allWords.filter(w => w.cat === currentCategory);
+}
+
+function setCategory(cat, btn) {
+  currentCategory = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  deck = getFiltered();
+  idx = 0;
+  seen.clear();
+  document.getElementById('doneScreen').classList.remove('visible');
+  showCard();
+  updateProgress();
+}
+
+function showCard() {
+  if (!deck.length) return;
+  const w = deck[idx];
+  document.getElementById('cardEN').textContent = w.en;
+  document.getElementById('cardNO').textContent = w.no;
+  document.getElementById('cardCat').textContent = catLabels[w.cat] || '';
+  document.getElementById('cardCounter').textContent = `${idx+1} / ${deck.length}`;
+  document.getElementById('cardInner').parentElement.classList.remove('flipped');
+  seen.add(w.en);
+  updateProgress();
+  updateWordGrid();
+}
+
+function flipCard() {
+  document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+function nextCard() {
+  if (idx < deck.length - 1) { idx++; showCard(); }
+  else { document.getElementById('doneScreen').classList.add('visible'); }
+}
+
+function prevCard() {
+  if (idx > 0) { idx--; showCard(); }
+}
+
+function shuffleCards() {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  idx = 0; seen.clear();
+  document.getElementById('doneScreen').classList.remove('visible');
+  showCard();
+}
+
+function restartCards() {
+  deck = getFiltered();
+  idx = 0; seen.clear();
+  document.getElementById('doneScreen').classList.remove('visible');
+  showCard();
+}
+
+function updateProgress() {
+  const total = deck.length;
+  const pct = total ? Math.round((seen.size / total) * 100) : 0;
+  document.getElementById('progBar').style.width = pct + '%';
+  document.getElementById('progText').textContent = `Card ${idx+1} of ${total}`;
+  document.getElementById('seenText').textContent = `${seen.size} seen`;
+}
+
+function updateWordGrid() {
+  const grid = document.getElementById('wordGrid');
+  grid.innerHTML = allWords.map(w => `
+    <div class="word-chip ${seen.has(w.en)?'seen':''}" onclick="goToWord('${w.en}')">
+      <span class="word-en">${w.en}</span>
+      <span class="word-no">${w.no}</span>
+    </div>`).join('');
+}
+
+function goToWord(en) {
+  const i = deck.findIndex(w => w.en === en);
+  if (i >= 0) { idx = i; showCard(); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+
+// init
+deck = getFiltered();
+showCard();
+</script>
+</body>
+</html>

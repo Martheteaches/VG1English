@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fishing Words – Task 2: Quiz | Vg1 Naturbruk</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --deep: #04294E;
+    --mid: #185FA5;
+    --teal: #1D9E75;
+    --radius: 16px;
+    --correct: #1D9E75;
+    --wrong: #D64444;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--deep); color: white; min-height: 100vh; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 85% 15%, #185FA5 0%, transparent 55%),
+      radial-gradient(ellipse 40% 50% at 5% 85%, #0F6E56 0%, transparent 50%),
+      var(--deep);
+    z-index: 0; pointer-events: none;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+  .nav { display: flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; }
+  .nav a { color: rgba(255,255,255,0.45); text-decoration: none; font-size: 13px; transition: color 0.15s; }
+  .nav a:hover { color: white; }
+  .nav-sep { color: rgba(255,255,255,0.2); }
+  .page-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #9FE1CB; margin-bottom: 10px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; color: white; margin-bottom: 8px; }
+  .page-desc { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.6; margin-bottom: 2rem; }
+
+  /* STICKY SCORE */
+  .score-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(4,41,78,0.85); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 0.8rem 1.2rem; margin-bottom: 1.5rem;
+    position: sticky; top: 10px; z-index: 10; backdrop-filter: blur(16px);
+  }
+  .score-item { text-align: center; }
+  .score-num { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; }
+  .score-label { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 300; }
+  .score-correct .score-num { color: #9FE1CB; }
+  .score-wrong .score-num { color: #F4A0A0; }
+
+  /* PROGRESS */
+  .prog-wrap { margin-bottom: 2rem; }
+  .prog-info { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+  .prog-bg { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+  .prog-fill { height: 4px; background: linear-gradient(90deg, var(--teal), #378ADD); border-radius: 10px; transition: width 0.4s ease; width: 0%; }
+
+  /* DIRECTION BADGE */
+  .dir-badge {
+    display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+  }
+  .dir-no-en { background: rgba(56,122,220,0.2); color: #85B7EB; border: 1px solid rgba(56,122,220,0.3); }
+  .dir-en-no { background: rgba(29,158,117,0.2); color: #9FE1CB; border: 1px solid rgba(29,158,117,0.3); }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.11);
+    border-radius: var(--radius); padding: 1.6rem 1.4rem; margin-bottom: 14px;
+    backdrop-filter: blur(10px); transition: border-color 0.25s, background 0.25s;
+  }
+  .q-card.correct-card { border-color: rgba(29,158,117,0.55); background: rgba(29,158,117,0.07); }
+  .q-card.wrong-card   { border-color: rgba(214,68,68,0.45);  background: rgba(214,68,68,0.05); }
+  .q-num { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 8px; }
+  .q-text { font-size: 16px; font-weight: 400; line-height: 1.6; color: white; margin-bottom: 1.1rem; }
+  .q-text strong { font-family: 'Fraunces', serif; font-size: 1.15em; color: #E8D8A0; }
+
+  /* OPTIONS */
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt-btn {
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 400;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.11);
+    color: white; padding: 11px 14px; border-radius: 10px; cursor: pointer; text-align: left;
+    transition: background 0.13s, border-color 0.13s; line-height: 1.4;
+  }
+  .opt-btn:hover:not(:disabled) { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.25); }
+  .opt-btn.correct  { background: rgba(29,158,117,0.25); border-color: rgba(29,158,117,0.6); color: #9FE1CB; font-weight: 500; }
+  .opt-btn.wrong    { background: rgba(214,68,68,0.2);   border-color: rgba(214,68,68,0.5);  color: #F4A0A0; }
+  .opt-btn:disabled { cursor: default; opacity: 0.85; }
+
+  .feedback { font-size: 13px; margin-top: 10px; padding: 7px 12px; border-radius: 8px; display: none; }
+  .feedback.visible { display: block; }
+  .feedback.correct { background: rgba(29,158,117,0.15); color: #9FE1CB; }
+  .feedback.wrong   { background: rgba(214,68,68,0.12);  color: #F4A0A0; }
+
+  /* RESULTS */
+  .results { display: none; text-align: center; padding: 3rem 1rem 2rem; }
+  .results.visible { display: block; }
+  .results-emoji { font-size: 60px; margin-bottom: 1rem; }
+  .results-title { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; margin-bottom: 6px; }
+  .results-sub   { color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 1.5rem; }
+  .results-score { font-family: 'Fraunces', serif; font-size: 3.5rem; font-weight: 700; color: #9FE1CB; line-height: 1; }
+  .results-total { font-size: 14px; color: rgba(255,255,255,0.4); margin: 6px 0 2rem; }
+  .missed-title { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 10px; text-align: left; }
+  .missed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-bottom: 2rem; text-align: left; }
+  .missed-chip { background: rgba(214,68,68,0.1); border: 1px solid rgba(214,68,68,0.25); border-radius: 10px; padding: 9px 12px; }
+  .missed-en { font-size: 13px; font-weight: 500; color: #F4A0A0; }
+  .missed-no { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .btn { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; border: none; cursor: pointer; border-radius: 40px; padding: 11px 24px; transition: all 0.15s; }
+  .btn-primary { background: var(--teal); color: white; }
+  .btn-primary:hover { background: #25b886; transform: translateY(-1px); }
+  .btn-ghost { background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.15); text-decoration: none; display: inline-block; }
+  .btn-ghost:hover { background: rgba(255,255,255,0.14); }
+  .results-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.35); text-decoration: none; font-size: 13px; margin-top: 2.5rem; transition: color 0.15s; }
+  .back-link:hover { color: white; }
+
+  @media (max-width: 480px) { .options { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <span class="nav-sep">›</span>
+    <a href="fishing.html">Fishing</a>
+    <span class="nav-sep">›</span>
+    <span style="color:rgba(255,255,255,0.7)">Task 2</span>
+  </nav>
+
+  <p class="page-eyebrow">Vocational words · Fishing · Task 2</p>
+  <h1 class="page-title">Vocabulary Quiz 🧠</h1>
+  <p class="page-desc">All 43 words — mixed directions (Norwegian → English and English → Norwegian). Watch out: distractors are picked from the same category to make it harder!</p>
+
+  <div class="score-bar">
+    <div class="score-item score-correct">
+      <div class="score-num" id="scoreCorrect">0</div>
+      <div class="score-label">Correct</div>
+    </div>
+    <div class="score-item">
+      <div class="score-num" id="scoreAnswered" style="color:rgba(255,255,255,0.6)">0</div>
+      <div class="score-label">Answered</div>
+    </div>
+    <div class="score-item score-wrong">
+      <div class="score-num" id="scoreWrong">0</div>
+      <div class="score-label">Wrong</div>
+    </div>
+    <div class="score-item">
+      <div class="score-num" id="scorePct" style="color:#85B7EB">–</div>
+      <div class="score-label">Score</div>
+    </div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-info">
+      <span id="progText">0 of 43 answered</span>
+      <span id="progPct">0%</span>
+    </div>
+    <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
+  </div>
+
+  <div id="quizContainer"></div>
+
+  <div class="results" id="results">
+    <div class="results-emoji" id="resultsEmoji">🎉</div>
+    <div class="results-title" id="resultsTitle">Well done!</div>
+    <div class="results-sub">Here's your final score:</div>
+    <div class="results-score" id="resultsBig">–</div>
+    <div class="results-total" id="resultsOut">out of 43</div>
+    <div class="results-btns">
+      <button class="btn btn-primary" onclick="restartQuiz()">↺ Try again</button>
+      <a href="fishing-task1.html" class="btn btn-ghost">← Flashcards</a>
+    </div>
+    <div class="missed-title" id="missedTitle" style="display:none">Words to review:</div>
+    <div class="missed-grid" id="missedGrid"></div>
+  </div>
+
+  <a href="fishing.html" class="back-link">← Back to Fishing</a>
+</div>
+
+<script>
+const words = [
+  { en: "Trawling",       no: "Trålfiske",       group: "methods" },
+  { en: "Trawler",        no: "Tråler",           group: "vessel"  },
+  { en: "Purse seine",    no: "Ringnot",          group: "methods" },
+  { en: "Danish seine",   no: "Snurrevad",        group: "methods" },
+  { en: "Potting",        no: "Bruke teiner",     group: "methods" },
+  { en: "Pot",            no: "Teine",            group: "gear"    },
+  { en: "Longlining",     no: "Linefiske",        group: "methods" },
+  { en: "Jigging",        no: "Juksefiske",       group: "methods" },
+  { en: "Mackerel",       no: "Makrell",          group: "fish"    },
+  { en: "Oyster",         no: "Østers",           group: "fish"    },
+  { en: "Lumpfish",       no: "Rognkjeks",        group: "fish"    },
+  { en: "Wrasse",         no: "Leppefisk",        group: "fish"    },
+  { en: "Gill net",       no: "Bunngarn",         group: "gear"    },
+  { en: "Drift net",      no: "Drivgarn",         group: "gear"    },
+  { en: "Bait",           no: "Agn",              group: "gear"    },
+  { en: "Lobster",        no: "Hummer",           group: "fish"    },
+  { en: "Shrimp",         no: "Reke",             group: "fish"    },
+  { en: "Port",           no: "Babord",           group: "vessel"  },
+  { en: "Starboard",      no: "Styrbord",         group: "vessel"  },
+  { en: "Stern",          no: "Akter",            group: "vessel"  },
+  { en: "Bow",            no: "Baug",             group: "vessel"  },
+  { en: "Crustacean",     no: "Skalldyr",         group: "fish"    },
+  { en: "Cod",            no: "Torsk",            group: "fish"    },
+  { en: "Herring",        no: "Sild",             group: "fish"    },
+  { en: "Coalfish",       no: "Sei",              group: "fish"    },
+  { en: "Haddock",        no: "Hyse",             group: "fish"    },
+  { en: "Fishing vessel", no: "Fiskebåt",         group: "vessel"  },
+  { en: "Oil skins",      no: "Oljehyre",         group: "gear"    },
+  { en: "Life jacket",    no: "Redningsvest",     group: "gear"    },
+  { en: "Gaff",           no: "Klepp",            group: "gear"    },
+  { en: "Rope",           no: "Tau",              group: "gear"    },
+  { en: "Hand net",       no: "Håv",              group: "gear"    },
+  { en: "Safety boots",   no: "Vernesko",         group: "gear"    },
+  { en: "Knife",          no: "Kniv",             group: "gear"    },
+  { en: "Gut",            no: "Sløye",            group: "gear"    },
+  { en: "School of fish", no: "Fiskestim",        group: "fish"    },
+  { en: "Power block",    no: "Kraftblokk",       group: "vessel"  },
+  { en: "Winch",          no: "Vinsj",            group: "vessel"  },
+  { en: "Buoy",           no: "Blåse",            group: "gear"    },
+  { en: "Quota",          no: "Kvote",            group: "methods" },
+  { en: "Hydraulics",     no: "Hydrolikk",        group: "vessel"  },
+  { en: "Radar",          no: "Radar",            group: "vessel"  },
+  { en: "Echo sounder",   no: "Ekkolodd",         group: "vessel"  },
+];
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function getSimilarDistractors(word, direction, count) {
+  const sameGroup = words.filter(w => w.group === word.group && w.en !== word.en);
+  const others    = words.filter(w => w.group !== word.group && w.en !== word.en);
+  shuffle(sameGroup); shuffle(others);
+  const pool = [...sameGroup, ...others];
+  return pool.slice(0, count).map(w => direction === 'no-en' ? w.en : w.no);
+}
+
+let quizWords = [];
+let answered = 0, correct = 0, wrong = 0, missedWords = [];
+
+function restartQuiz() {
+  answered = 0; correct = 0; wrong = 0; missedWords = [];
+  updateScore();
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('progFill').style.width = '0%';
+  document.getElementById('progText').textContent = '0 of 43 answered';
+  document.getElementById('progPct').textContent = '0%';
+  quizWords = shuffle([...words]).map((w, i) => ({ ...w, direction: i % 2 === 0 ? 'no-en' : 'en-no' }));
+  buildQuiz();
+}
+
+function buildQuiz() {
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  quizWords.forEach((w, i) => c.appendChild(buildCard(w, i)));
+}
+
+function buildCard(word, i) {
+  const isNoEn = word.direction === 'no-en';
+  const question      = isNoEn ? word.no : word.en;
+  const correctAnswer = isNoEn ? word.en : word.no;
+  const distractors   = getSimilarDistractors(word, word.direction, 3);
+  const options       = shuffle([correctAnswer, ...distractors]);
+
+  const div = document.createElement('div');
+  div.className = 'q-card';
+  div.id = `q${i}`;
+
+  const badgeClass = isNoEn ? 'dir-no-en' : 'dir-en-no';
+  const badgeText  = isNoEn ? 'Norwegian → English' : 'English → Norwegian';
+  const promptText = isNoEn
+    ? `What is the English word for <strong>${question}</strong>?`
+    : `What is the Norwegian word for <strong>${question}</strong>?`;
+
+  div.innerHTML = `
+    <div class="q-num">Question ${i + 1} of 43</div>
+    <span class="dir-badge ${badgeClass}">${badgeText}</span>
+    <div class="q-text">${promptText}</div>
+    <div class="options" id="opts${i}"></div>
+    <div class="feedback" id="fb${i}"></div>`;
+
+  // Build option buttons safely (no inline onclick with dynamic strings)
+  const optsDiv = div.querySelector(`#opts${i}`);
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => checkAnswer(btn, correctAnswer, opt, i));
+    optsDiv.appendChild(btn);
+  });
+
+  return div;
+}
+
+function checkAnswer(btn, correctAnswer, chosen, i) {
+  const card = document.getElementById(`q${i}`);
+  if (card.dataset.done) return;
+  card.dataset.done = '1';
+
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correctAnswer) b.classList.add('correct');
+  });
+
+  const fb = document.getElementById(`fb${i}`);
+  if (chosen === correctAnswer) {
+    btn.classList.add('correct');
+    card.classList.add('correct-card');
+    fb.textContent = '✓ Correct!';
+    fb.className = 'feedback visible correct';
+    correct++;
+  } else {
+    btn.classList.add('wrong');
+    card.classList.add('wrong-card');
+    fb.textContent = `✗ Wrong — the correct answer is: ${correctAnswer}`;
+    fb.className = 'feedback visible wrong';
+    wrong++;
+    missedWords.push(quizWords[i]);
+  }
+
+  answered++;
+  updateScore();
+  if (answered === 43) setTimeout(showResults, 700);
+}
+
+function updateScore() {
+  document.getElementById('scoreCorrect').textContent  = correct;
+  document.getElementById('scoreWrong').textContent    = wrong;
+  document.getElementById('scoreAnswered').textContent = answered;
+  document.getElementById('scorePct').textContent = answered ? Math.round((correct / answered) * 100) + '%' : '–';
+  const pct = Math.round((answered / 43) * 100);
+  document.getElementById('progFill').style.width  = pct + '%';
+  document.getElementById('progText').textContent  = `${answered} of 43 answered`;
+  document.getElementById('progPct').textContent   = pct + '%';
+}
+
+function showResults() {
+  const pct   = Math.round((correct / 43) * 100);
+  const emoji = pct >= 90 ? '🏆' : pct >= 75 ? '🎉' : pct >= 55 ? '👍' : '💪';
+  const title = pct >= 90 ? 'Outstanding!' : pct >= 75 ? 'Well done!' : pct >= 55 ? 'Good effort!' : 'Keep practising!';
+  document.getElementById('resultsEmoji').textContent = emoji;
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsBig').textContent   = correct;
+  document.getElementById('resultsOut').textContent   = `out of 43 (${pct}%)`;
+
+  const mg = document.getElementById('missedGrid');
+  const mt = document.getElementById('missedTitle');
+  if (missedWords.length > 0) {
+    mt.style.display = 'block';
+    mg.innerHTML = missedWords.map(w => `
+      <div class="missed-chip">
+        <div class="missed-en">${w.en}</div>
+        <div class="missed-no">${w.no}</div>
+      </div>`).join('');
+  } else {
+    mt.style.display = 'none';
+    mg.innerHTML = '';
+  }
+
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+restartQuiz();
+</script>
+</body>
+</html>
