@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Read | Vg1 Naturbruk English</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep: #042C53; --mid: #185FA5; --light: #378ADD;
+  --teal: #1D9E75; --sand: #FAF7F2; --ink: #1a1a2e;
+  --soft: #4a5a6e; --radius: 16px;
+  --correct: #1D9E75; --wrong: #D64444;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--ink); min-height: 100vh; }
+
+/* HERO */
+.hero {
+  background: var(--deep); position: relative; overflow: hidden;
+  padding: 3rem 2rem 2.5rem; min-height: 200px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 50%, #185FA5 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 5% 80%, #1D9E75 0%, transparent 55%),
+    var(--deep);
+}
+.hero-content { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.45); text-decoration: none; font-size: 13px; margin-bottom: 1.2rem; transition: color 0.15s; }
+.back-link:hover { color: white; }
+.hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #9FE1CB; margin-bottom: 10px; }
+.hero-title { font-family: 'Fraunces', serif; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 700; color: white; margin-bottom: 8px; }
+.hero-sub { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+/* MAIN */
+.main { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+
+/* TEXT SELECTOR TABS */
+.text-tabs { display: flex; gap: 10px; margin-bottom: 2rem; flex-wrap: wrap; }
+.text-tab {
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  padding: 10px 22px; border-radius: 40px; cursor: pointer; border: none;
+  background: white; color: var(--soft);
+  border: 1.5px solid rgba(0,0,0,0.1);
+  transition: all 0.15s;
+}
+.text-tab.active { background: var(--deep); color: white; border-color: var(--deep); }
+.text-tab:hover:not(.active) { border-color: var(--mid); color: var(--mid); }
+
+/* STEP INDICATOR */
+.steps { display: flex; align-items: center; gap: 0; margin-bottom: 2rem; }
+.step {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 400; color: rgba(0,0,0,0.3);
+  padding: 7px 16px; border-radius: 40px;
+  transition: all 0.2s;
+}
+.step.active { background: var(--deep); color: white; font-weight: 500; }
+.step.done { color: var(--teal); }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.08); color: inherit; flex-shrink: 0;
+}
+.step.active .step-num { background: rgba(255,255,255,0.2); }
+.step.done .step-num { background: var(--teal); color: white; }
+.step-sep { width: 24px; height: 1px; background: rgba(0,0,0,0.1); flex-shrink: 0; }
+
+/* READING PANEL */
+.panel { display: none; }
+.panel.active { display: block; }
+
+.reading-card {
+  background: white; border-radius: var(--radius); border: 1px solid rgba(0,0,0,0.07);
+  padding: 2rem 2rem; margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.reading-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--soft); margin-bottom: 6px;
+}
+.reading-title { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.reading-meta { font-size: 12px; color: var(--soft); margin-bottom: 1.4rem; display: flex; gap: 14px; flex-wrap: wrap; }
+.reading-meta span { display: flex; align-items: center; gap: 4px; }
+.reading-body { font-size: 15px; line-height: 1.85; color: var(--ink); font-weight: 300; }
+.reading-body p { margin-bottom: 1rem; }
+.reading-body p:last-child { margin-bottom: 0; }
+.vocab-hint { background: #E6F1FB; color: #0C447C; border-radius: 4px; padding: 1px 5px; font-size: 13px; cursor: help; font-weight: 400; border-bottom: 1px dashed #185FA5; }
+
+/* DRAG TASK */
+.drag-instructions {
+  background: #E6F1FB; border: 1px solid rgba(24,95,165,0.15);
+  border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 1.5rem;
+  font-size: 13px; color: #0C447C; line-height: 1.6;
+}
+.word-bank {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem;
+  background: white; border: 1px solid rgba(0,0,0,0.07);
+  border-radius: var(--radius); padding: 1rem 1.2rem;
+}
+.drag-word {
+  background: var(--deep); color: white; font-size: 13px; font-weight: 500;
+  padding: 6px 14px; border-radius: 20px; cursor: grab;
+  transition: opacity 0.15s, transform 0.15s;
+  user-select: none;
+}
+.drag-word:active { cursor: grabbing; transform: scale(1.05); }
+.drag-word.used { opacity: 0.3; cursor: default; pointer-events: none; }
+
+.gap-text { font-size: 15px; line-height: 2.4; color: var(--ink); font-weight: 300; background: white; border-radius: var(--radius); padding: 1.5rem 1.5rem; border: 1px solid rgba(0,0,0,0.07); margin-bottom: 1.2rem; }
+.gap-text p { margin-bottom: 0.8rem; }
+.gap-text p:last-child { margin-bottom: 0; }
+
+.drop-slot {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 110px; height: 30px; border-radius: 20px;
+  border: 2px dashed rgba(24,95,165,0.35);
+  background: rgba(24,95,165,0.04);
+  font-size: 13px; font-weight: 500; color: transparent;
+  margin: 0 3px; vertical-align: middle;
+  transition: all 0.15s; cursor: pointer; position: relative;
+}
+.drop-slot.drag-over { border-color: var(--mid); background: rgba(24,95,165,0.1); }
+.drop-slot.filled { border-style: solid; border-color: var(--mid); background: #E6F1FB; color: #0C447C; padding: 0 12px; cursor: pointer; }
+.drop-slot.filled:hover { background: #d0e7f8; }
+.drop-slot.correct-slot { border-color: var(--correct); background: #E1F5EE; color: #085041; }
+.drop-slot.wrong-slot { border-color: var(--wrong); background: #FCEBEB; color: #8B1A1A; }
+
+/* QUESTIONS */
+.q-card {
+  background: white; border-radius: var(--radius); border: 1px solid rgba(0,0,0,0.07);
+  padding: 1.4rem 1.4rem; margin-bottom: 12px;
+}
+.q-card.correct-card { border-color: rgba(29,158,117,0.4); background: rgba(29,158,117,0.04); }
+.q-card.wrong-card   { border-color: rgba(214,68,68,0.35);  background: rgba(214,68,68,0.03); }
+.q-num { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--soft); margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 400; color: var(--ink); margin-bottom: 1rem; line-height: 1.5; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-opt {
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 400;
+  background: var(--sand); border: 1px solid rgba(0,0,0,0.1);
+  color: var(--ink); padding: 10px 14px; border-radius: 10px; cursor: pointer; text-align: left;
+  transition: all 0.13s;
+}
+.q-opt:hover:not(:disabled) { border-color: var(--mid); background: #E6F1FB; }
+.q-opt.correct  { background: #E1F5EE; border-color: var(--teal); color: #085041; font-weight: 500; }
+.q-opt.wrong    { background: #FCEBEB; border-color: var(--wrong); color: #8B1A1A; }
+.q-opt:disabled { cursor: default; }
+.q-feedback { font-size: 13px; margin-top: 10px; padding: 6px 12px; border-radius: 8px; display: none; }
+.q-feedback.visible { display: block; }
+.q-feedback.correct { background: #E1F5EE; color: #085041; }
+.q-feedback.wrong   { background: #FCEBEB; color: #8B1A1A; }
+
+/* SCORE */
+.score-box {
+  background: white; border: 1px solid rgba(0,0,0,0.07); border-radius: var(--radius);
+  padding: 1.2rem 1.5rem; display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 1.5rem;
+}
+.score-box .s-num { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; }
+.score-box .s-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--soft); }
+.s-correct .s-num { color: var(--teal); }
+.s-wrong .s-num { color: var(--wrong); }
+
+/* BUTTONS */
+.btn {
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  border: none; cursor: pointer; border-radius: 40px; padding: 11px 26px;
+  transition: all 0.15s; display: inline-block; text-decoration: none;
+}
+.btn-primary { background: var(--deep); color: white; }
+.btn-primary:hover { background: #185FA5; transform: translateY(-1px); }
+.btn-teal { background: var(--teal); color: white; }
+.btn-teal:hover { background: #25b886; transform: translateY(-1px); }
+.btn-ghost { background: white; color: var(--soft); border: 1.5px solid rgba(0,0,0,0.12); }
+.btn-ghost:hover { border-color: var(--mid); color: var(--mid); }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.2rem; }
+
+/* RESULTS PANEL */
+.results-box {
+  background: white; border-radius: var(--radius); border: 1px solid rgba(0,0,0,0.07);
+  padding: 2.5rem; text-align: center; margin-top: 2rem; display: none;
+}
+.results-box.visible { display: block; }
+.r-emoji { font-size: 56px; margin-bottom: 1rem; }
+.r-title { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; }
+.r-sub { color: var(--soft); font-size: 14px; margin-bottom: 1.5rem; }
+.r-score { font-family: 'Fraunces', serif; font-size: 3rem; font-weight: 700; color: var(--teal); }
+.r-total { font-size: 14px; color: var(--soft); margin-bottom: 2rem; }
+
+@media (max-width: 520px) {
+  .main { padding: 1.5rem 1rem 4rem; }
+  .reading-card { padding: 1.2rem; }
+  .gap-text { padding: 1rem; }
+  .drop-slot { min-width: 80px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <a href="index.html" class="back-link">← Home</a>
+    <p class="hero-eyebrow">Skills · Reading</p>
+    <h1 class="hero-title">Read 📄</h1>
+    <p class="hero-sub">Two texts from the fishing and aquaculture industry. Read, complete the gap-fill, then answer comprehension questions.</p>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- TEXT SELECTOR -->
+  <div class="text-tabs">
+    <button class="text-tab active" onclick="switchText(0, this)">🚢 Text 1 – A Day on a Fishing Boat</button>
+    <button class="text-tab" onclick="switchText(1, this)">🐟 Text 2 – Life on a Fish Farm</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TEXT 1 – FISHING BOAT
+  ════════════════════════════════════════════ -->
+  <div class="panel active" id="panel0">
+
+    <!-- STEPS -->
+    <div class="steps" id="steps0">
+      <div class="step active" id="step0-0"><div class="step-num">1</div> Read</div>
+      <div class="step-sep"></div>
+      <div class="step" id="step0-1"><div class="step-num">2</div> Gap-fill</div>
+      <div class="step-sep"></div>
+      <div class="step" id="step0-2"><div class="step-num">3</div> Questions</div>
+    </div>
+
+    <!-- STEP 1: READ -->
+    <div id="t0-read">
+      <div class="reading-card">
+        <div class="reading-label">Text 1 · B1 Level</div>
+        <h2 class="reading-title">A Day on a Fishing Vessel</h2>
+        <div class="reading-meta">
+          <span>📖 ~280 words</span>
+          <span>⏱ 5–7 min read</span>
+          <span>🎣 Topic: Fishing industry</span>
+        </div>
+        <div class="reading-body">
+          <p>Magnus has been working as a <span class="vocab-hint" title="a boat used for catching fish professionally">fishing vessel</span> deckhand for three years. He works on a <span class="vocab-hint" title="a large fishing boat that drags a net behind it">trawler</span> operating out of Stavanger, and his working day begins well before sunrise.</p>
+          <p>At four o'clock in the morning, the crew prepares the <span class="vocab-hint" title="large net dragged along the seabed or mid-water">trawl net</span> and checks the <span class="vocab-hint" title="a machine used to wind ropes or cables">winch</span>. Magnus is responsible for inspecting the <span class="vocab-hint" title="an underwater device that uses sound waves to detect fish">echo sounder</span> and making sure the <span class="vocab-hint" title="a system for detecting objects using radio waves">radar</span> is functioning correctly. These instruments help the captain locate <span class="vocab-hint" title="a large group of fish swimming together">schools of fish</span> before the net is deployed.</p>
+          <p>Once the net is in the water, the crew waits. <span class="vocab-hint" title="catching fish by dragging a net through the water">Trawling</span> can take several hours, and during this time Magnus checks the <span class="vocab-hint" title="a hollow ball used to mark the position of nets in the water">buoys</span> and maintains the <span class="vocab-hint" title="a system that controls machinery using pressurised fluid">hydraulics</span>. When the net is finally hauled in, the catch is sorted on deck. Magnus uses a <span class="vocab-hint" title="a long-handled hook for landing large fish">gaff</span> to handle the larger fish, and a <span class="vocab-hint" title="a small net on a long handle used to scoop fish">hand net</span> for the smaller ones.</p>
+          <p>The most common species in their catch are <span class="vocab-hint" title="torsk">cod</span>, <span class="vocab-hint" title="sei">coalfish</span>, and <span class="vocab-hint" title="hyse">haddock</span>. Occasionally they bring in <span class="vocab-hint" title="sild">herring</span> or <span class="vocab-hint" title="makrell">mackerel</span> as well. Every fish caught must be recorded against the vessel's <span class="vocab-hint" title="the maximum amount of fish a vessel is legally allowed to catch">quota</span>.</p>
+          <p>By the time they return to <span class="vocab-hint" title="the left side of a vessel when facing forward">port</span>, it is late afternoon. Magnus puts on his <span class="vocab-hint" title="waterproof clothing worn by fishermen">oil skins</span> for the last time that day, <span class="vocab-hint" title="to remove the internal organs from a fish">guts</span> the remaining fish, and coils the <span class="vocab-hint" title="tau">rope</span> back onto the deck. It is hard, physical work — but Magnus says he would not trade it for anything.</p>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goToStep(0,1)">I've read it — start the gap-fill →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: GAP-FILL -->
+    <div id="t0-gaps" style="display:none">
+      <div class="drag-instructions">
+        <strong>Task:</strong> Drag the words from the word bank into the correct gaps in the text. Click a filled gap to remove the word and return it to the bank.
+      </div>
+      <div class="word-bank" id="wb0"></div>
+      <div class="gap-text" id="gaptext0"></div>
+      <div class="btn-row">
+        <button class="btn btn-teal" onclick="checkGaps(0)">Check my answers ✓</button>
+        <button class="btn btn-ghost" onclick="resetGaps(0)">↺ Reset</button>
+      </div>
+      <div id="gap-result0" style="display:none; margin-top:1rem;"></div>
+    </div>
+
+    <!-- STEP 3: QUESTIONS -->
+    <div id="t0-questions" style="display:none">
+      <div class="score-box">
+        <div class="s-correct"><div class="s-num" id="qscore0c">0</div><div class="s-label">Correct</div></div>
+        <div><div class="s-num" id="qscore0t" style="color:var(--soft)">0</div><div class="s-label">Answered</div></div>
+        <div class="s-wrong"><div class="s-num" id="qscore0w">0</div><div class="s-label">Wrong</div></div>
+      </div>
+      <div id="qcontainer0"></div>
+      <div class="results-box" id="qresult0">
+        <div class="r-emoji" id="remoji0">🎉</div>
+        <div class="r-title" id="rtitle0">Well done!</div>
+        <div class="r-sub">Here's your score for Text 1:</div>
+        <div class="r-score" id="rscore0">–</div>
+        <div class="r-total" id="rtotal0">out of 5</div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-ghost" onclick="resetAll(0)">↺ Start over</button>
+          <button class="btn btn-primary" onclick="switchText(1, document.querySelectorAll('.text-tab')[1])">Text 2 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TEXT 2 – FISH FARM
+  ════════════════════════════════════════════ -->
+  <div class="panel" id="panel1">
+    <div class="steps" id="steps1">
+      <div class="step active" id="step1-0"><div class="step-num">1</div> Read</div>
+      <div class="step-sep"></div>
+      <div class="step" id="step1-1"><div class="step-num">2</div> Gap-fill</div>
+      <div class="step-sep"></div>
+      <div class="step" id="step1-2"><div class="step-num">3</div> Questions</div>
+    </div>
+
+    <!-- STEP 1: READ -->
+    <div id="t1-read">
+      <div class="reading-card">
+        <div class="reading-label">Text 2 · B1 Level</div>
+        <h2 class="reading-title">A Day on a Fish Farm</h2>
+        <div class="reading-meta">
+          <span>📖 ~290 words</span>
+          <span>⏱ 5–7 min read</span>
+          <span>🐟 Topic: Aquaculture</span>
+        </div>
+        <div class="reading-body">
+          <p>Ingrid works as a <span class="vocab-hint" title="røkter – person responsible for the daily care of fish on a farm">fish farmer</span> at a salmon facility on the west coast of Norway. Her mornings start at six, when she pulls on her <span class="vocab-hint" title="oljehyre – waterproof overalls">oil skins</span>, <span class="vocab-hint" title="vernesko – boots with steel toecaps">safety boots</span>, and <span class="vocab-hint" title="hjelm – protective helmet">hard hat</span> before stepping onto the <span class="vocab-hint" title="flåte – a floating platform connecting the cages">fleet</span>.</p>
+          <p>Her first task is checking the <span class="vocab-hint" title="merd – a large floating net cage for fish">fish cages</span>. She walks around each <span class="vocab-hint" title="merd">net pen</span>, observing the fish's <span class="vocab-hint" title="adferd – how the fish are behaving and moving">attitude</span> — whether they are swimming normally or showing signs of stress. She also performs an <span class="vocab-hint" title="miljøkontroll – measuring water conditions">environment check</span>, measuring the <span class="vocab-hint" title="salinitet – the amount of salt in the water">salinity</span> and oxygen levels in the water.</p>
+          <p>One of the most important daily tasks is removing <span class="vocab-hint" title="død fisk – dead fish that must be removed and counted">morts</span> — dead fish that must be taken out of the cage immediately and registered. Ingrid uses a <span class="vocab-hint" title="håv – a small net on a long handle">hand net</span> to collect them before running them through the <span class="vocab-hint" title="kvern – machine that grinds dead fish for disposal">fish grinder</span>.</p>
+          <p>Later in the morning, she counts <span class="vocab-hint" title="lus – parasites that attach to the skin of salmon">sea lice</span> on a sample of fish. High numbers of sea lice can damage the salmon and must be treated early. <span class="vocab-hint" title="rensefisk – fish that eat sea lice off salmon">Cleaner fish</span> — both <span class="vocab-hint" title="leppefisk">wrasse</span> and <span class="vocab-hint" title="rognkjeks">lumpfish</span> — are kept in the cages to help control lice levels naturally.</p>
+          <p>In the afternoon, Ingrid checks the <span class="vocab-hint" title="fortøyning – ropes and anchors keeping the cages in place">mooring</span> lines and inspects the <span class="vocab-hint" title="haneføtter – lines connecting the cage to the mooring system">bridle lines</span> for wear. She finishes by feeding the fish, monitoring the <span class="vocab-hint" title="fiskefôr – specially formulated food pellets">fish feed</span> consumption on a screen, and recording the day's data in the farm log. It is demanding work, but Ingrid is proud to be part of Norway's most important food industry.</p>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goToStep(1,1)">I've read it — start the gap-fill →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: GAP-FILL -->
+    <div id="t1-gaps" style="display:none">
+      <div class="drag-instructions">
+        <strong>Task:</strong> Drag the words from the word bank into the correct gaps in the text. Click a filled gap to remove the word and return it to the bank.
+      </div>
+      <div class="word-bank" id="wb1"></div>
+      <div class="gap-text" id="gaptext1"></div>
+      <div class="btn-row">
+        <button class="btn btn-teal" onclick="checkGaps(1)">Check my answers ✓</button>
+        <button class="btn btn-ghost" onclick="resetGaps(1)">↺ Reset</button>
+      </div>
+      <div id="gap-result1" style="display:none; margin-top:1rem;"></div>
+    </div>
+
+    <!-- STEP 3: QUESTIONS -->
+    <div id="t1-questions" style="display:none">
+      <div class="score-box">
+        <div class="s-correct"><div class="s-num" id="qscore1c">0</div><div class="s-label">Correct</div></div>
+        <div><div class="s-num" id="qscore1t" style="color:var(--soft)">0</div><div class="s-label">Answered</div></div>
+        <div class="s-wrong"><div class="s-num" id="qscore1w">0</div><div class="s-label">Wrong</div></div>
+      </div>
+      <div id="qcontainer1"></div>
+      <div class="results-box" id="qresult1">
+        <div class="r-emoji" id="remoji1">🎉</div>
+        <div class="r-title" id="rtitle1">Well done!</div>
+        <div class="r-sub">Here's your score for Text 2:</div>
+        <div class="r-score" id="rscore1">–</div>
+        <div class="r-total" id="rtotal1">out of 5</div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-ghost" onclick="resetAll(1)">↺ Start over</button>
+          <button class="btn btn-primary" onclick="window.location='index.html'">← Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── DATA ──────────────────────────────────────────────
+
+const gapData = [
+  // TEXT 1 – fishing boat
+  {
+    words: ["trawler","winch","quota","echo sounder","buoys","oil skins","coalfish","hand net","port","schools of fish"],
+    template: [
+      `<p>Magnus works on a <span class="drop-slot" data-answer="trawler"></span> operating out of Stavanger. Every morning, he checks the <span class="drop-slot" data-answer="echo sounder"></span> to help the captain find <span class="drop-slot" data-answer="schools of fish"></span> beneath the surface.</p>`,
+      `<p>When the net is in the water, Magnus inspects the <span class="drop-slot" data-answer="buoys"></span> and maintains the machinery. He uses the <span class="drop-slot" data-answer="winch"></span> to haul the net back in when the catch is ready.</p>`,
+      `<p>The most common species they catch are cod, <span class="drop-slot" data-answer="coalfish"></span>, and haddock. All fish must be counted against the vessel's <span class="drop-slot" data-answer="quota"></span> to comply with fishing regulations.</p>`,
+      `<p>Before returning to <span class="drop-slot" data-answer="port"></span>, Magnus puts on his <span class="drop-slot" data-answer="oil skins"></span> and uses a <span class="drop-slot" data-answer="hand net"></span> to collect the smaller fish on deck.</p>`
+    ]
+  },
+  // TEXT 2 – fish farm
+  {
+    words: ["morts","sea lice","fish farmer","salinity","cleaner fish","mooring","fish feed","hard hat","net pen","hand net"],
+    template: [
+      `<p>Ingrid is a <span class="drop-slot" data-answer="fish farmer"></span> on a salmon facility. Every morning she puts on her safety gear, including a <span class="drop-slot" data-answer="hard hat"></span>, before stepping onto the fleet.</p>`,
+      `<p>She checks each <span class="drop-slot" data-answer="net pen"></span> carefully and performs an environment check, measuring the <span class="drop-slot" data-answer="salinity"></span> and oxygen levels in the water.</p>`,
+      `<p>One of her most important daily tasks is removing <span class="drop-slot" data-answer="morts"></span> from the cages. She collects them using a <span class="drop-slot" data-answer="hand net"></span> before running them through the fish grinder.</p>`,
+      `<p>Ingrid also counts <span class="drop-slot" data-answer="sea lice"></span> on a sample of salmon. <span class="drop-slot" data-answer="cleaner fish"></span> such as wrasse and lumpfish are kept in the cages to help control the lice naturally.</p>`,
+      `<p>In the afternoon she inspects the <span class="drop-slot" data-answer="mooring"></span> lines and monitors the <span class="drop-slot" data-answer="fish feed"></span> consumption before recording the day's data.</p>`
+    ]
+  }
+];
+
+const questionData = [
+  // TEXT 1 questions
+  [
+    { q:"What time does Magnus and his crew start preparing the trawl net?", opts:["6:00 AM","4:00 AM","Midday","8:00 AM"], a:1, fb:"The text says the crew prepares the net 'well before sunrise' — at four o'clock in the morning." },
+    { q:"What does the echo sounder help the crew do?", opts:["Control the winch","Navigate back to port","Locate schools of fish","Check the weather"], a:2, fb:"The echo sounder helps the captain locate schools of fish before the net is deployed." },
+    { q:"Which of these is NOT mentioned as a species caught by Magnus's vessel?", opts:["Cod","Mackerel","Salmon","Haddock"], a:2, fb:"The text mentions cod, coalfish, haddock, herring, and mackerel — but not salmon." },
+    { q:"What does Magnus use for handling larger fish on deck?", opts:["A hand net","A gaff","A cast net","A rope"], a:1, fb:"The text says Magnus uses a gaff for larger fish and a hand net for the smaller ones." },
+    { q:"Why must every fish caught be recorded?", opts:["For the ship's log","To calculate the crew's pay","To stay within the vessel's quota","To report to the coast guard"], a:2, fb:"Every fish must be recorded against the vessel's quota — the legal limit on how much can be caught." }
+  ],
+  // TEXT 2 questions
+  [
+    { q:"What does Ingrid check first when she arrives at work?", opts:["The fish feed consumption","The mooring lines","The fish cages","The fish grinder"], a:2, fb:"Her first task is checking the fish cages — observing the fish's attitude and swimming behaviour." },
+    { q:"What does 'fish attitude' mean in the context of the text?", opts:["How aggressive the fish are","How the fish are behaving and swimming","The taste and quality of the fish","How quickly the fish are growing"], a:1, fb:"Observing fish attitude means watching whether they are swimming normally or showing signs of stress." },
+    { q:"What happens to the morts after they are collected?", opts:["They are sold at a discount","They are returned to the sea","They go through the fish grinder","They are frozen immediately"], a:2, fb:"Ingrid removes morts using a hand net and then runs them through the fish grinder." },
+    { q:"Why are cleaner fish kept in the salmon cages?", opts:["To increase the oxygen levels","To eat the sea lice off the salmon","To keep the salmon calm","To replace the salmon that die"], a:1, fb:"Cleaner fish — wrasse and lumpfish — are kept in the cages to eat sea lice and control them naturally." },
+    { q:"What does Ingrid do at the end of her working day?", opts:["She cleans the nets","She monitors feed consumption and records data in the farm log","She harvests the salmon","She delivers fish to the well boat"], a:1, fb:"Ingrid finishes by monitoring fish feed consumption and recording the day's data in the farm log." }
+  ]
+];
+
+// ── STATE ─────────────────────────────────────────────
+let currentStep = [0, 0];
+let qScores = [{c:0,w:0,t:0},{c:0,w:0,t:0}];
+let dragWord = null;
+
+// ── INIT ──────────────────────────────────────────────
+function init() {
+  [0,1].forEach(t => {
+    buildWordBank(t);
+    buildGapText(t);
+    buildQuestions(t);
+  });
+}
+
+// ── SWITCH TEXT ───────────────────────────────────────
+function switchText(idx, btn) {
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.text-tab').forEach((b,i) => b.classList.toggle('active', i===idx));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── STEPS ─────────────────────────────────────────────
+function goToStep(t, step) {
+  currentStep[t] = step;
+  // hide all sections
+  document.getElementById(`t${t}-read`).style.display      = step===0?'block':'none';
+  document.getElementById(`t${t}-gaps`).style.display      = step===1?'block':'none';
+  document.getElementById(`t${t}-questions`).style.display = step===2?'block':'none';
+  // update step indicator
+  [0,1,2].forEach(i => {
+    const el = document.getElementById(`step${t}-${i}`);
+    el.classList.remove('active','done');
+    if (i < step) el.classList.add('done');
+    if (i === step) el.classList.add('active');
+    // replace step-num with checkmark when done
+    el.querySelector('.step-num').textContent = i < step ? '✓' : i+1;
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function resetAll(t) {
+  qScores[t] = {c:0,w:0,t:0};
+  updateQScore(t);
+  document.getElementById(`qresult${t}`).classList.remove('visible');
+  resetGaps(t);
+  buildQuestions(t);
+  goToStep(t, 0);
+}
+
+// ── WORD BANK ─────────────────────────────────────────
+function buildWordBank(t) {
+  const wb = document.getElementById(`wb${t}`);
+  wb.innerHTML = '';
+  shuffle([...gapData[t].words]).forEach(w => {
+    const el = document.createElement('div');
+    el.className = 'drag-word';
+    el.textContent = w;
+    el.draggable = true;
+    el.dataset.word = w;
+    el.addEventListener('dragstart', e => { dragWord = w; e.dataTransfer.setData('text', w); });
+    el.addEventListener('click', () => { dragWord = w; highlightSlots(t); });
+    wb.appendChild(el);
+  });
+}
+
+function highlightSlots(t) {
+  document.querySelectorAll(`#gaptext${t} .drop-slot:not(.filled)`).forEach(s => s.classList.add('drag-over'));
+  setTimeout(() => document.querySelectorAll('.drag-over').forEach(s => s.classList.remove('drag-over')), 600);
+}
+
+// ── GAP TEXT ──────────────────────────────────────────
+function buildGapText(t) {
+  const gt = document.getElementById(`gaptext${t}`);
+  gt.innerHTML = gapData[t].template.join('');
+  gt.querySelectorAll('.drop-slot').forEach(slot => {
+    // show placeholder
+    slot.style.color = 'transparent';
+    slot.dataset.filled = '';
+    // drag events
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', e => { e.preventDefault(); fillSlot(t, slot, e.dataTransfer.getData('text') || dragWord); });
+    // click to fill (after clicking word)
+    slot.addEventListener('click', () => { if (dragWord && !slot.dataset.filled) fillSlot(t, slot, dragWord); });
+  });
+}
+
+function fillSlot(t, slot, word) {
+  if (!word) return;
+  if (slot.dataset.filled) returnWord(t, slot.dataset.filled);
+  slot.dataset.filled = word;
+  slot.textContent = word;
+  slot.classList.add('filled');
+  slot.classList.remove('drag-over','correct-slot','wrong-slot');
+  slot.style.color = '';
+  // mark word as used
+  const wb = document.getElementById(`wb${t}`);
+  const wEl = [...wb.querySelectorAll('.drag-word')].find(el => el.dataset.word === word && !el.classList.contains('used'));
+  if (wEl) wEl.classList.add('used');
+  dragWord = null;
+}
+
+function returnWord(t, word) {
+  const wb = document.getElementById(`wb${t}`);
+  const wEl = [...wb.querySelectorAll('.drag-word')].find(el => el.dataset.word === word);
+  if (wEl) wEl.classList.remove('used');
+}
+
+function resetGaps(t) {
+  const gt = document.getElementById(`gaptext${t}`);
+  gt.querySelectorAll('.drop-slot').forEach(slot => {
+    if (slot.dataset.filled) returnWord(t, slot.dataset.filled);
+    slot.dataset.filled = '';
+    slot.textContent = '';
+    slot.classList.remove('filled','correct-slot','wrong-slot');
+    slot.style.color = 'transparent';
+  });
+  document.getElementById(`gap-result${t}`).style.display = 'none';
+  dragWord = null;
+}
+
+function checkGaps(t) {
+  const gt = document.getElementById(`gaptext${t}`);
+  let correct = 0, total = 0, empty = 0;
+  gt.querySelectorAll('.drop-slot').forEach(slot => {
+    total++;
+    if (!slot.dataset.filled) { empty++; return; }
+    if (slot.dataset.filled === slot.dataset.answer) {
+      slot.classList.add('correct-slot'); slot.classList.remove('wrong-slot'); correct++;
+    } else {
+      slot.classList.add('wrong-slot'); slot.classList.remove('correct-slot');
+    }
+  });
+  const res = document.getElementById(`gap-result${t}`);
+  res.style.display = 'block';
+  const pct = Math.round((correct/total)*100);
+  if (empty > 0) {
+    res.innerHTML = `<div style="background:#FFF8E1;border:1px solid #F0C040;border-radius:10px;padding:10px 14px;font-size:13px;color:#7A5C00;">⚠️ You have ${empty} empty gap${empty>1?'s':''}. Fill all gaps before checking!</div>`;
+    return;
+  }
+  const col = pct>=80?'#E1F5EE':'#FCEBEB';
+  const tc  = pct>=80?'#085041':'#8B1A1A';
+  res.innerHTML = `<div style="background:${col};border-radius:10px;padding:12px 16px;font-size:14px;color:${tc};">
+    ${pct>=80?'✓':'✗'} You got <strong>${correct} out of ${total}</strong> correct (${pct}%).
+    ${pct===100?' Perfect! 🎉':pct>=80?' Great job! ':' Review the red gaps and try again.'}
+    ${pct>=60?`<br><br><button class="btn btn-primary" onclick="goToStep(${t},2)" style="margin-top:8px;">Continue to questions →</button>`:''}
+  </div>`;
+}
+
+// ── QUESTIONS ─────────────────────────────────────────
+function buildQuestions(t) {
+  const c = document.getElementById(`qcontainer${t}`);
+  c.innerHTML = '';
+  qScores[t] = {c:0,w:0,t:0};
+  updateQScore(t);
+  questionData[t].forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'q-card'; div.id = `qq${t}-${i}`;
+    div.innerHTML = `
+      <div class="q-num">Question ${i+1} of ${questionData[t].length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-options" id="qopts${t}-${i}"></div>
+      <div class="q-feedback" id="qfb${t}-${i}"></div>`;
+    const optsDiv = div.querySelector(`#qopts${t}-${i}`);
+    q.opts.forEach((opt, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'q-opt'; btn.textContent = opt;
+      btn.addEventListener('click', () => answerQ(t, i, oi, q.a, q.fb, btn));
+      optsDiv.appendChild(btn);
+    });
+    c.appendChild(div);
+  });
+}
+
+function answerQ(t, qi, chosen, correct, fb, btn) {
+  const card = document.getElementById(`qq${t}-${qi}`);
+  if (card.dataset.done) return;
+  card.dataset.done = '1';
+  card.querySelectorAll('.q-opt').forEach((b,i) => {
+    b.disabled = true;
+    if (i===correct) b.classList.add('correct');
+  });
+  const fbEl = document.getElementById(`qfb${t}-${qi}`);
+  if (chosen === correct) {
+    btn.classList.add('correct'); card.classList.add('correct-card');
+    fbEl.textContent = '✓ Correct! ' + fb; fbEl.className = 'q-feedback visible correct';
+    qScores[t].c++;
+  } else {
+    btn.classList.add('wrong'); card.classList.add('wrong-card');
+    fbEl.textContent = '✗ ' + fb; fbEl.className = 'q-feedback visible wrong';
+    qScores[t].w++;
+  }
+  qScores[t].t++;
+  updateQScore(t);
+  if (qScores[t].t === questionData[t].length) setTimeout(() => showQResult(t), 600);
+}
+
+function updateQScore(t) {
+  document.getElementById(`qscore${t}c`).textContent = qScores[t].c;
+  document.getElementById(`qscore${t}w`).textContent = qScores[t].w;
+  document.getElementById(`qscore${t}t`).textContent = qScores[t].t;
+}
+
+function showQResult(t) {
+  const total = questionData[t].length;
+  const c = qScores[t].c;
+  const pct = Math.round((c/total)*100);
+  document.getElementById(`remoji${t}`).textContent = pct>=80?'🏆':pct>=60?'🎉':'💪';
+  document.getElementById(`rtitle${t}`).textContent = pct>=80?'Excellent!':pct>=60?'Well done!':'Keep practising!';
+  document.getElementById(`rscore${t}`).textContent = c;
+  document.getElementById(`rtotal${t}`).textContent = `out of ${total} (${pct}%)`;
+  document.getElementById(`qresult${t}`).classList.add('visible');
+  document.getElementById(`qresult${t}`).scrollIntoView({behavior:'smooth'});
+}
+
+function shuffle(a) {
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+init();
+</script>
+</body>
+</html>
