@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocational Words – Aquaculture | Vg1 Naturbruk</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --deep: #053D2C; --mid: #0F6E56; --light: #1D9E75;
+    --sand: #FAF7F2; --ink: #1a1a2e; --soft: #4a5a6e; --radius: 18px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--ink); min-height: 100vh; }
+
+  /* HERO */
+  .hero { position:relative; overflow:hidden; background:var(--deep); min-height:320px; display:flex; flex-direction:column; justify-content:flex-end; }
+  .hero-bg {
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 70% 60% at 75% 25%, #0F6E56 0%, transparent 60%),
+      radial-gradient(ellipse 45% 55% at 5% 90%, #185FA5 0%, transparent 55%),
+      var(--deep);
+  }
+
+  /* bubbles in hero */
+  .hero-bubbles { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .hb { position:absolute; border-radius:50%; background:rgba(255,255,255,0.06); animation:hbrise linear infinite; }
+  .hb:nth-child(1){left:12%;width:14px;height:14px;animation-duration:8s;animation-delay:0s;}
+  .hb:nth-child(2){left:28%;width:8px; height:8px; animation-duration:11s;animation-delay:-3s;}
+  .hb:nth-child(3){left:50%;width:20px;height:20px;animation-duration:9s; animation-delay:-6s;}
+  .hb:nth-child(4){left:68%;width:10px;height:10px;animation-duration:13s;animation-delay:-1s;}
+  .hb:nth-child(5){left:82%;width:16px;height:16px;animation-duration:10s;animation-delay:-8s;}
+  @keyframes hbrise {
+    0%  {bottom:-30px;opacity:0;}
+    10% {opacity:0.8;}
+    90% {opacity:0.4;}
+    100%{bottom:100%;opacity:0;}
+  }
+
+  .waves { position:absolute; bottom:0; left:0; width:100%; height:90px; }
+  .hero-content { position:relative; z-index:2; padding:3rem 2.5rem 2.5rem; max-width:860px; }
+  .back-link { display:inline-flex; align-items:center; gap:6px; color:rgba(255,255,255,0.45); text-decoration:none; font-size:13px; margin-bottom:1.4rem; transition:color 0.15s; }
+  .back-link:hover { color:white; }
+  .hero-eyebrow { font-size:11px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:#9FE1CB; margin-bottom:12px; }
+  .hero-title { font-family:'Fraunces',serif; font-size:clamp(1.8rem,5vw,2.8rem); font-weight:700; color:white; line-height:1.15; margin-bottom:10px; }
+  .hero-sub { font-size:15px; font-weight:300; color:rgba(255,255,255,0.55); line-height:1.6; margin-bottom:1.5rem; max-width:520px; }
+  .hero-stats { display:flex; gap:24px; flex-wrap:wrap; }
+  .stat { text-align:center; }
+  .stat-num { font-family:'Fraunces',serif; font-size:1.6rem; font-weight:700; color:#9FE1CB; line-height:1; }
+  .stat-label { font-size:11px; color:rgba(255,255,255,0.4); margin-top:3px; font-weight:300; }
+
+  /* MAIN */
+  .main { max-width:860px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
+  .section-label {
+    font-size:11px; font-weight:500; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--soft); margin-bottom:1.2rem; display:flex; align-items:center; gap:10px;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background:rgba(0,0,0,0.08); }
+
+  /* OBJECTIVES */
+  .obj-box {
+    background:linear-gradient(135deg,#E1F5EE 0%,#E6F1FB 100%);
+    border:1px solid rgba(15,110,86,0.12); border-radius:var(--radius);
+    padding:1.5rem; margin-bottom:3rem;
+  }
+  .obj-title { font-size:14px; font-weight:500; color:var(--deep); margin-bottom:1rem; }
+  .obj-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .obj-list li { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:var(--ink); font-weight:300; line-height:1.5; }
+  .obj-list li::before { content:'✓'; font-size:12px; font-weight:700; color:var(--light); margin-top:2px; flex-shrink:0; }
+
+  /* TASK CARDS */
+  .task-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:3rem; }
+  .task-card {
+    background:white; border-radius:var(--radius); border:1px solid rgba(0,0,0,0.07);
+    padding:1.6rem 1.4rem; text-decoration:none; color:inherit;
+    display:flex; flex-direction:column;
+    transition:transform 0.18s ease, box-shadow 0.18s ease;
+    position:relative; overflow:hidden;
+  }
+  .task-card:hover { transform:translateY(-4px); box-shadow:0 14px 36px rgba(0,0,0,0.1); }
+  .task-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; }
+  .task-card.t1::before { background:linear-gradient(90deg,var(--mid),var(--light)); }
+  .task-card.t2::before { background:linear-gradient(90deg,var(--light),#378ADD); }
+  .task-icon { font-size:32px; margin-bottom:14px; }
+  .task-num { font-size:11px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--soft); margin-bottom:6px; }
+  .task-title { font-family:'Fraunces',serif; font-size:1.35rem; font-weight:700; color:var(--ink); margin-bottom:8px; }
+  .task-desc { font-size:13px; font-weight:300; color:var(--soft); line-height:1.6; flex:1; margin-bottom:1.2rem; }
+  .task-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1.4rem; }
+  .task-tag { font-size:11px; padding:3px 10px; border-radius:20px; }
+  .tag-teal   { background:#E1F5EE; color:#085041; }
+  .tag-blue   { background:#E6F1FB; color:#0C447C; }
+  .tag-amber  { background:#FAEEDA; color:#633806; }
+  .task-cta { display:inline-flex; align-items:center; gap:8px; font-size:14px; font-weight:500; color:var(--mid); transition:gap 0.15s; }
+  .task-card:hover .task-cta { gap:12px; }
+  .task-card.t2 .task-cta { color:var(--light); }
+
+  /* WORD PREVIEW */
+  .word-preview-box { background:white; border:1px solid rgba(0,0,0,0.07); border-radius:var(--radius); padding:1.4rem 1.5rem; }
+  .wp-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; }
+  .wp-title { font-size:14px; font-weight:500; color:var(--ink); }
+  .wp-count { font-size:12px; color:var(--soft); }
+  .cat-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1rem; }
+  .cat-tab { font-size:12px; padding:4px 12px; border-radius:20px; cursor:pointer; border:none; background:#f0f0f0; color:var(--soft); transition:all 0.13s; }
+  .cat-tab.active, .cat-tab:hover { background:var(--deep); color:white; }
+  .word-chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .word-chip { background:var(--sand); border:1px solid rgba(0,0,0,0.08); border-radius:10px; padding:8px 12px; font-size:13px; display:flex; flex-direction:column; gap:2px; min-width:120px; }
+  .wc-en { font-weight:500; color:var(--ink); }
+  .wc-no { font-size:11px; color:var(--soft); }
+
+  @media (max-width:540px) {
+    .task-grid { grid-template-columns:1fr; }
+    .hero-content { padding:2rem 1.2rem 2rem; }
+    .main { padding:1.8rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-bubbles">
+    <div class="hb"></div><div class="hb"></div><div class="hb"></div>
+    <div class="hb"></div><div class="hb"></div>
+  </div>
+  <svg class="waves" viewBox="0 0 1440 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,45 C240,80 480,10 720,45 C960,80 1200,10 1440,45 L1440,90 L0,90 Z" fill="#FAF7F2" opacity="0.15"/>
+    <path d="M0,65 C200,35 400,85 600,65 C800,45 1000,85 1200,65 C1320,55 1380,68 1440,65 L1440,90 L0,90 Z" fill="#FAF7F2" opacity="0.2"/>
+    <path d="M0,78 C180,68 360,88 540,78 C720,68 900,88 1080,78 C1260,68 1360,82 1440,78 L1440,90 L0,90 Z" fill="#FAF7F2" opacity="1"/>
+  </svg>
+  <div class="hero-content">
+    <a href="index.html" class="back-link">← Home</a>
+    <p class="hero-eyebrow">Vocational words · Aquaculture</p>
+    <h1 class="hero-title">Aquaculture</h1>
+    <p class="hero-sub">Learn the essential English vocabulary used in fish farming — daily tasks, gear, fish biology, and farm structure.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">51</div><div class="stat-label">words</div></div>
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label">tasks</div></div>
+      <div class="stat"><div class="stat-num">5</div><div class="stat-label">categories</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <p class="section-label">Learning objectives</p>
+  <div class="obj-box">
+    <p class="obj-title">After completing this topic you will be able to:</p>
+    <ul class="obj-list">
+      <li>Describe daily tasks on a fish farm in English (feeding, checking cages, removing morts and more)</li>
+      <li>Name the safety gear and equipment used in aquaculture in English</li>
+      <li>Identify fish species, biology terms, and health issues by their English names</li>
+      <li>Use correct English terms for fish farm structures and equipment</li>
+      <li>Translate key vocational words between Norwegian and English</li>
+    </ul>
+  </div>
+
+  <p class="section-label">Tasks</p>
+  <div class="task-grid">
+    <a class="task-card t1" href="aquaculture-task1.html">
+      <div class="task-icon">🃏</div>
+      <div class="task-num">Task 1</div>
+      <div class="task-title">Flashcards</div>
+      <div class="task-desc">Go through all 51 words as flip cards. Click to reveal the Norwegian translation. Filter by category and track your progress.</div>
+      <div class="task-tags">
+        <span class="task-tag tag-teal">Self-study</span>
+        <span class="task-tag tag-teal">All 51 words</span>
+        <span class="task-tag tag-teal">5 categories</span>
+      </div>
+      <div class="task-cta">Start Task 1 →</div>
+    </a>
+    <a class="task-card t2" href="aquaculture-task2.html">
+      <div class="task-icon">🧠</div>
+      <div class="task-num">Task 2</div>
+      <div class="task-title">Vocabulary Quiz</div>
+      <div class="task-desc">Test yourself on all 51 words. Mixed directions — Norwegian → English and English → Norwegian. Distractors from the same category make it harder!</div>
+      <div class="task-tags">
+        <span class="task-tag tag-blue">Quiz</span>
+        <span class="task-tag tag-blue">Mixed directions</span>
+        <span class="task-tag tag-amber">Challenging</span>
+      </div>
+      <div class="task-cta">Start Task 2 →</div>
+    </a>
+  </div>
+
+  <p class="section-label">Word list preview</p>
+  <div class="word-preview-box">
+    <div class="wp-header">
+      <span class="wp-title">All 51 aquaculture words</span>
+      <span class="wp-count" id="wpCount">Showing all</span>
+    </div>
+    <div class="cat-tabs">
+      <button class="cat-tab active" onclick="filterWords('all',this)">All</button>
+      <button class="cat-tab" onclick="filterWords('tasks',this)">🐠 Daily tasks</button>
+      <button class="cat-tab" onclick="filterWords('gear',this)">🔧 Gear & safety</button>
+      <button class="cat-tab" onclick="filterWords('fish',this)">🐟 Fish & biology</button>
+      <button class="cat-tab" onclick="filterWords('structure',this)">⚓ Farm structure</button>
+      <button class="cat-tab" onclick="filterWords('roles',this)">👷 Roles</button>
+    </div>
+    <div class="word-chips" id="wordChips"></div>
+  </div>
+</main>
+
+<script>
+const words = [
+  {en:"Check the fish cages",no:"Sjekke merdene",cat:"tasks"},
+  {en:"Remove morts",no:"Fjerne død fisk",cat:"tasks"},
+  {en:"Register morts",no:"Registrere død fisk",cat:"tasks"},
+  {en:"Count sea lice",no:"Telle lus",cat:"tasks"},
+  {en:"Feed cleaner fish",no:"Fôre rensefisk",cat:"tasks"},
+  {en:"Feed salmon",no:"Fôre laks",cat:"tasks"},
+  {en:"Maintenance",no:"Vedlikehold",cat:"tasks"},
+  {en:"Environment check",no:"Miljøkontroll",cat:"tasks"},
+  {en:"Observe fish attitude",no:"Observere fiskens adferd",cat:"tasks"},
+  {en:"Clean net cages",no:"Spyle merder",cat:"tasks"},
+  {en:"Check antibird nets",no:"Sjekke fuglenettet",cat:"tasks"},
+  {en:"Dry artificial kelp",no:"Tørke leppefiskskjul",cat:"tasks"},
+  {en:"Control cleaner fish delivery",no:"Kontrollere levering av rensefisk",cat:"tasks"},
+  {en:"Harvesting",no:"Høsting / slakt",cat:"tasks"},
+  {en:"Help the well boats",no:"Hjelpe brønnbåtene",cat:"tasks"},
+  {en:"Hard hat",no:"Hjelm",cat:"gear"},
+  {en:"Hand net",no:"Håv",cat:"gear"},
+  {en:"Cast net",no:"Kastenot",cat:"gear"},
+  {en:"Safety net",no:"Sikkerhetsnett",cat:"gear"},
+  {en:"Gloves",no:"Hansker",cat:"gear"},
+  {en:"Safety goggles",no:"Vernebriller",cat:"gear"},
+  {en:"Anaesthetics",no:"Bedøvelse",cat:"gear"},
+  {en:"Tub / tank",no:"Kar",cat:"gear"},
+  {en:"Life jacket",no:"Redningsvest",cat:"gear"},
+  {en:"Rope",no:"Tau",cat:"gear"},
+  {en:"Oil skins",no:"Oljehyre",cat:"gear"},
+  {en:"Crane",no:"Kran",cat:"gear"},
+  {en:"Safety boots",no:"Vernesko",cat:"gear"},
+  {en:"Knife",no:"Kniv",cat:"gear"},
+  {en:"Fish grinder",no:"Kvern",cat:"gear"},
+  {en:"Dewaterer",no:"Silekasse",cat:"gear"},
+  {en:"Diffuser",no:"Spreder",cat:"gear"},
+  {en:"Morts",no:"Død fisk",cat:"fish"},
+  {en:"Sea lice",no:"Lus",cat:"fish"},
+  {en:"Cleaner fish",no:"Rensefisk",cat:"fish"},
+  {en:"Wrasse",no:"Leppefisk",cat:"fish"},
+  {en:"Lumpfish",no:"Rognkjeks",cat:"fish"},
+  {en:"Artificial kelp",no:"Leppefiskskjul",cat:"fish"},
+  {en:"Fish feed",no:"Fiskefôr",cat:"fish"},
+  {en:"Brood",no:"Stamfisk",cat:"fish"},
+  {en:"Fry",no:"Fiskeyngel",cat:"fish"},
+  {en:"Salinity",no:"Salinitet",cat:"fish"},
+  {en:"Winter ulcers",no:"Vintersår",cat:"fish"},
+  {en:"Fish cage / net pen",no:"Merd",cat:"structure"},
+  {en:"Well boat",no:"Brønnbåt",cat:"structure"},
+  {en:"Buoy",no:"Blåse",cat:"structure"},
+  {en:"Mooring",no:"Fortøyning",cat:"structure"},
+  {en:"Fleet",no:"Flåte",cat:"structure"},
+  {en:"Shackle",no:"Sjakkel",cat:"structure"},
+  {en:"Bridle lines",no:"Haneføtter",cat:"structure"},
+  {en:"Fish farmer",no:"Røkter",cat:"roles"},
+  {en:"Aqua technician",no:"Akvatekniker",cat:"roles"},
+];
+
+let currentCat='all';
+function filterWords(cat,btn){
+  currentCat=cat;
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderChips();
+}
+function renderChips(){
+  const filtered=currentCat==='all'?words:words.filter(w=>w.cat===currentCat);
+  document.getElementById('wpCount').textContent=currentCat==='all'?'Showing all 51':`${filtered.length} words`;
+  document.getElementById('wordChips').innerHTML=filtered.map(w=>`
+    <div class="word-chip"><span class="wc-en">${w.en}</span><span class="wc-no">${w.no}</span></div>`).join('');
+}
+renderChips();
+</script>
+</body>
+</html>
